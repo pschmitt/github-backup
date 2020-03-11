@@ -61,6 +61,9 @@ gh_backup_all_orgs() {
 }
 
 install_github-backup
+
+mkdir -p "$DATA_DIR"
+
 # There are less orgs than personal repos. So let's start with those.
 gh_backup_all_orgs
 gh_backup "$GITHUB_USERNAME"
