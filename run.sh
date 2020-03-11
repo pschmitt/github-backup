@@ -3,7 +3,7 @@
 cd "$(readlink -f "$(dirname "$0")")" || exit 9
 
 GITHUB_USERNAME=${GITHUB_USERNAME:-pschmitt}
-DATA_DIR="${PWD}/data"
+DATA_DIR="${DATA_DIR:-${PWD}/data}"
 DATE_FORMAT="${DATE_FORMAT:---iso-8601=seconds}"
 
 # shellcheck disable=1091
