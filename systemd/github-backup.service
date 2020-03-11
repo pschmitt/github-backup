@@ -1,0 +1,12 @@
+[Unit]
+Description=GitHub backup
+After=network.target
+
+[Service]
+Type=oneshot
+User=pschmitt
+WorkingDirectory=/mnt/data/backup/github
+ExecStart=/mnt/data/backup/github/run.sh
+
+[Install]
+WantedBy=multi-user.target
