@@ -66,7 +66,25 @@ hc() {
     return 0
   fi
 
-  curl -fsSL "${HEALTHCHECK_URL}${1}"
+  local -a extra_args
+  local endpoint="$1" msg="$2"
+
+  # There is no /success endoint, so we rewrite it to empty
+  case "$endpoint" in
+    *succes*)
+      endpoint=""
+      ;;
+  esac
+
+  if [[ -n "$msg" ]]
+  then
+    extra_args=(--data "$msg")
+  fi
+
+  curl -fsSL -m 10 --retry 5 -X POST \
+    -H "Content-Type: text/plain" \
+    "${extra_args[@]}" \
+    "${HEALTHCHECK_URL}${endpoint}"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
@@ -89,13 +107,21 @@ then
 
   mkdir -p "$DATA_DIR"
 
-  hc "/start"
+  hc "/start" "Starting backup of org repos"
   # There should be less org than personal repos. So let's start with those.
-  if gh_backup_all_orgs && gh_backup "$GITHUB_USERNAME"
+  if gh_backup_all_orgs
   then
-    hc
+    hc "/success" "Backup of org repos completed successfully"
   else
-    hc "/fail"
+    hc "/fail" "Backup of org repos failed"
+  fi
+
+  hc "/start" "Starting backup of personal repos of ${GITHUB_USERNAME}"
+  if gh_backup "$GITHUB_USERNAME"
+  then
+    hc "/success" "Backup of $GITHUB_USERNAME completed successfully"
+  else
+    hc "/fail" "Backup of $GITHUB_USERNAME failed"
   fi
 
   date "$DATE_FORMAT" | tee "${DATA_DIR}/LAST_UPDATED"
