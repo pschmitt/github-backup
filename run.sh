@@ -17,7 +17,7 @@ list_gh_orgs() {
   # curl -fsSL -X GET --header "Authorization: Bearer ${GITHUB_TOKEN}" \
   #   "https://api.github.com/users/${GITHUB_USERNAME}/orgs?per_page=1000" | \
   #   jq -er '.[].login'
-  curl -X GET \
+  curl -fsSL -X GET \
     "https://api.github.com/users/${GITHUB_USERNAME}/orgs?per_page=1000" | \
     jq -r '.[].login'
 }
