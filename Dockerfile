@@ -5,7 +5,8 @@ RUN apk add --update --no-cache bash curl jq && \
     mkdir -p /data
 
 WORKDIR /data
-ENV GITHUB_USERNAME=pschmitt GITHUB_TOKEN= INTERVAL=1d DATA_DIR=/data
+ENV GITHUB_USERNAME=pschmitt GITHUB_TOKEN= \
+    INTERVAL=1d DATA_DIR=/data HEALTHCHECK_URL=
 VOLUME /data
 
 COPY run.sh entrypoint.sh /

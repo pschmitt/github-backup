@@ -56,6 +56,16 @@ gh_backup_all_orgs() {
   done
 }
 
+hc() {
+  if [[ -z "$HEALTHCHECK_URL" ]]
+  then
+    echo "HEALTHCHECK_URL not set, skipping healthcheck"
+    return 0
+  fi
+
+  curl -fsSL "${HEALTHCHECK_URL}${1}"
+}
+
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
 then
   cd "$(readlink -f "$(dirname "$0")")" || exit 9
@@ -80,8 +90,13 @@ then
 
   mkdir -p "$DATA_DIR"
 
-  # There should be less org than personal repos. So let's start with those.
-  gh_backup_all_orgs
-  gh_backup "$GITHUB_USERNAME"
+  hc "/start"
+  {
+    # There should be less org than personal repos. So let's start with those.
+    gh_backup_all_orgs
+    gh_backup "$GITHUB_USERNAME"
+  }
+  hc
+
   date "$DATE_FORMAT" | tee "${DATA_DIR}/LAST_UPDATED"
 fi
