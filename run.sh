@@ -2,14 +2,15 @@
 
 cd "$(readlink -f "$(dirname "$0")")" || exit 9
 
-GITHUB_USERNAME=${GITHUB_USERNAME:-pschmitt}
+GITHUB_USERNAME=${GITHUB_USERNAME:-${USER}}
 DATA_DIR="${DATA_DIR:-${PWD}/data}"
-DATE_FORMAT="${DATE_FORMAT:---iso-8601=seconds}"
+DATE_FORMAT="${DATE_FORMAT:--Iseconds}"
 
 # shellcheck disable=1091
 source .envrc
 
-set -ex
+set -e
+# set -x
 
 export PATH=$PATH:/home/pschmitt/.local/bin/github-backup
 
