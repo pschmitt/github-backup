@@ -1,6 +1,6 @@
 FROM python:3.11-alpine
 
-RUN apk add --update --no-cache bash curl jq sudo && \
+RUN apk add --update --no-cache bash curl jq && \
     pip install --no-cache-dir github-backup && \
     mkdir -p /data
 

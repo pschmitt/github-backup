@@ -1,30 +1,22 @@
 #!/usr/bin/env bash
 
-cd "$(readlink -f "$(dirname "$0")")" || exit 9
-
-GITHUB_USERNAME=${GITHUB_USERNAME:-${USER}}
-DATA_DIR="${DATA_DIR:-${PWD}/data}"
-DATE_FORMAT="${DATE_FORMAT:--Iseconds}"
-
-# shellcheck disable=1091
-source .envrc 2>/dev/null
-
-set -e
-# set -x
-
-export PATH=$PATH:/home/pschmitt/.local/bin/github-backup
-
 install_github-backup() {
   if ! command -v github-backup > /dev/null
   then
-    pip3 install --user github-backup
+    if ! command -v pipx > /dev/null
+    then
+      pip install --user pipx
+      export PATH="${HOME}/.local/bin:${PATH}"
+    fi
+
+    pipx install github-backup
   fi
 }
 
 list_gh_orgs() {
   curl -fsSL -X GET --header "Authorization: Bearer ${GITHUB_TOKEN}" \
     "https://api.github.com/users/${GITHUB_USERNAME}/orgs?per_page=1000" | \
-    jq -r '.[].login'
+    jq -er '.[].login'
 }
 
 gh_backup() {
@@ -49,24 +41,47 @@ gh_backup() {
     -o "${DATA_DIR}/${dest}" \
     "$dest"
   then
-    date "$DATE_FORMAT" | sudo tee "${DATA_DIR}/${dest}/LAST_UPDATED"
+    date "$DATE_FORMAT" | tee "${DATA_DIR}/${dest}/LAST_UPDATED"
   fi
 }
 
 gh_backup_all_orgs() {
-  local org
+  local -a orgs
+  mapfile -t orgs < <(list_gh_orgs)
 
-  for org in $(list_gh_orgs)
+  local org
+  for org in "${orgs[@]}"
   do
     gh_backup -o "$org"
   done
 }
 
-install_github-backup
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
+then
+  cd "$(readlink -f "$(dirname "$0")")" || exit 9
 
-mkdir -p "$DATA_DIR"
+  GITHUB_USERNAME=${GITHUB_USERNAME:-${USER}}
+  DATA_DIR="${DATA_DIR:-${PWD}/data}"
+  DATE_FORMAT="${DATE_FORMAT:--Iseconds}"
 
-# There are less orgs than personal repos. So let's start with those.
-gh_backup_all_orgs
-gh_backup "$GITHUB_USERNAME"
-date "$DATE_FORMAT" | sudo tee "${DATA_DIR}/LAST_UPDATED"
+  # shellcheck disable=1091
+  source .envrc 2>/dev/null
+
+  {
+    if [[ -n "${DEBUG:-}" ]]
+      then
+      set -x
+    fi
+
+    set -e
+  }
+
+  install_github-backup
+
+  mkdir -p "$DATA_DIR"
+
+  # There should be less org than personal repos. So let's start with those.
+  gh_backup_all_orgs
+  gh_backup "$GITHUB_USERNAME"
+  date "$DATE_FORMAT" | tee "${DATA_DIR}/LAST_UPDATED"
+fi
