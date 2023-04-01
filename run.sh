@@ -80,26 +80,23 @@ then
   # shellcheck disable=1091
   source .envrc 2>/dev/null
 
-  {
-    if [[ -n "${DEBUG:-}" ]]
-      then
-      set -x
-    fi
-
-    set -e
-  }
+  if [[ -n "${DEBUG:-}" ]]
+  then
+    set -ex
+  fi
 
   install_github-backup
 
   mkdir -p "$DATA_DIR"
 
   hc "/start"
-  {
-    # There should be less org than personal repos. So let's start with those.
-    gh_backup_all_orgs
-    gh_backup "$GITHUB_USERNAME"
-  }
-  hc
+  # There should be less org than personal repos. So let's start with those.
+  if gh_backup_all_orgs && gh_backup "$GITHUB_USERNAME"
+  then
+    hc
+  else
+    hc "/fail"
+  fi
 
   date "$DATE_FORMAT" | tee "${DATA_DIR}/LAST_UPDATED"
 fi
