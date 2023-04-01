@@ -14,9 +14,12 @@ install_github-backup() {
 }
 
 list_gh_orgs() {
-  curl -fsSL -X GET --header "Authorization: Bearer ${GITHUB_TOKEN}" \
+  # curl -fsSL -X GET --header "Authorization: Bearer ${GITHUB_TOKEN}" \
+  #   "https://api.github.com/users/${GITHUB_USERNAME}/orgs?per_page=1000" | \
+  #   jq -er '.[].login'
+  curl -X GET \
     "https://api.github.com/users/${GITHUB_USERNAME}/orgs?per_page=1000" | \
-    jq -er '.[].login'
+    jq -r '.[].login'
 }
 
 gh_backup() {
