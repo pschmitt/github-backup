@@ -7,7 +7,7 @@ DATA_DIR="${DATA_DIR:-${PWD}/data}"
 DATE_FORMAT="${DATE_FORMAT:--Iseconds}"
 
 # shellcheck disable=1091
-source .envrc
+source .envrc 2>/dev/null
 
 set -e
 # set -x
