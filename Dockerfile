@@ -5,7 +5,7 @@ RUN apk add --update --no-cache bash curl git git-lfs openssh-client jq && \
     mkdir -p /data
 
 WORKDIR /data
-ENV GITHUB_USERNAME=pschmitt GITHUB_TOKEN= \
+ENV GITHUB_USERNAME=pschmitt GITHUB_TOKEN= GITHUB_BACKUP_ARGS= \
     INTERVAL=1d DATA_DIR=/data HEALTHCHECK_URL=
 VOLUME /data
 

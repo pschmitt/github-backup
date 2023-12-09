@@ -35,6 +35,7 @@ gh_backup() {
     --assets \
     --prefer-ssh \
     --output-directory "${DATA_DIR}/${target}" \
+    "${GITHUB_BACKUP_ARGS[@]}" \
     "${extra_args[@]}"
   then
     date "$DATE_FORMAT" | tee "${DATA_DIR}/${target}/LAST_UPDATED"
@@ -85,6 +86,8 @@ then
   cd "$(readlink -f "$(dirname "$0")")" || exit 9
 
   GITHUB_USERNAME=${GITHUB_USERNAME:-${USER}}
+  # shellcheck disable=SC2206
+  GITHUB_BACKUP_ARGS=(${GITHUB_BACKUP_ARGS})
   DATA_DIR="${DATA_DIR:-${PWD}/data}"
   DATE_FORMAT="${DATE_FORMAT:--Iseconds}"
 
