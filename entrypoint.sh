@@ -1,10 +1,19 @@
 #!/usr/bin/env bash
 
+if [[ -d /ssh ]]
+then
+  echo "Copying SSH keys from /ssh to ~/.ssh" >&2
+  mkdir -p ~/.ssh
+  cp /ssh/id_* ~/.ssh
+  chmod 700 ~/.ssh
+  chmod 400 ~/.ssh/id_*
+fi
+
 while true
 do
   /run.sh
 
-  echo "Aight. I sleep now."
+  echo "Aight. I sleep now." >&2
 
   if ! sleep "${INTERVAL:-1d}"
   then

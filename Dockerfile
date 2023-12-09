@@ -1,6 +1,6 @@
 FROM python:3.12-alpine
 
-RUN apk add --update --no-cache bash curl git git-lfs jq && \
+RUN apk add --update --no-cache bash curl git git-lfs openssh-client jq && \
     pip install --no-cache-dir github-backup && \
     mkdir -p /data
 
