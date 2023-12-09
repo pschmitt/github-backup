@@ -38,6 +38,8 @@ gh_backup() {
     -t "$GITHUB_TOKEN" \
     --all \
     --private \
+    --repositories \
+    --lfs \
     --assets \
     --prefer-ssh \
     "${args[@]}" \
