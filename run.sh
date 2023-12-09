@@ -71,9 +71,9 @@ hc() {
   local -a extra_args
   local endpoint="$1" msg="$2"
 
-  # There is no /success endoint, so we rewrite it to empty
+  # There is no /success endpoint, so we rewrite it to empty
   case "$endpoint" in
-    *succes*)
+    *success*)
       endpoint=""
       ;;
   esac
