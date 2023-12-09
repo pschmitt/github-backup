@@ -56,7 +56,7 @@ gh_backup_all_orgs() {
 hc() {
   if [[ -z "$HEALTHCHECK_URL" ]]
   then
-    echo "HEALTHCHECK_URL not set, skipping healthcheck"
+    echo "HEALTHCHECK_URL not set, skipping healthcheck" >&2
     return 0
   fi
 

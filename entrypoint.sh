@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
+mkdir -p ~/.ssh
+
 if [[ -d /ssh ]]
 then
   echo "Copying SSH keys from /ssh to ~/.ssh" >&2
-  mkdir -p ~/.ssh
+
   cp /ssh/id_* ~/.ssh
   chmod 700 ~/.ssh
   chmod 400 ~/.ssh/id_*
@@ -11,6 +13,9 @@ then
   eval "$(ssh-agent)"
   find ~/.ssh -iname 'id_*' -not -iname '*.pub' -exec ssh-add {} \;
 fi
+
+touch ~/.ssh/known_hosts
+ssh-keyscan -H github.com >> ~/.ssh/known_hosts 2>/dev/null
 
 while true
 do
