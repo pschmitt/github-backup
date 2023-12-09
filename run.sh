@@ -23,30 +23,21 @@ list_gh_orgs() {
 }
 
 gh_backup() {
-  local args=()
-
-  case "$1" in
-    org|--org|-o)
-      args=(-O)
-      shift
-      ;;
-  esac
-
-  local dest="${1:$GITHUB_USERNAME}"
+  local extra_args=("$@")
+  local target="${extra_args[-1]}"  # last arg is the user/org name
 
   if github-backup \
-    -t "$GITHUB_TOKEN" \
+    --token "$GITHUB_TOKEN" \
     --all \
     --private \
     --repositories \
     --lfs \
     --assets \
     --prefer-ssh \
-    "${args[@]}" \
-    -o "${DATA_DIR}/${dest}" \
-    "$dest"
+    --output-directory "${DATA_DIR}/${target}" \
+    "${extra_args[@]}"
   then
-    date "$DATE_FORMAT" | tee "${DATA_DIR}/${dest}/LAST_UPDATED"
+    date "$DATE_FORMAT" | tee "${DATA_DIR}/${target}/LAST_UPDATED"
   fi
 }
 
@@ -57,7 +48,7 @@ gh_backup_all_orgs() {
   local org
   for org in "${orgs[@]}"
   do
-    gh_backup -o "$org"
+    gh_backup --organization "$org"
   done
 }
 
