@@ -34,7 +34,7 @@ gh_backup() {
 
   local dest="${1:$GITHUB_USERNAME}"
 
-  if github-backup -i \
+  if github-backup \
     -t "$GITHUB_TOKEN" \
     --all \
     --private \
