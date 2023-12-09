@@ -7,6 +7,9 @@ then
   cp /ssh/id_* ~/.ssh
   chmod 700 ~/.ssh
   chmod 400 ~/.ssh/id_*
+
+  eval "$(ssh-agent)"
+  find ~/.ssh -iname 'id_*' -not -iname '*.pub' -exec ssh-add {} \;
 fi
 
 while true
