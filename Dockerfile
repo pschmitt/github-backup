@@ -1,4 +1,4 @@
-FROM python:3.13-alpine
+FROM python:3.14-alpine
 
 RUN apk add --update --no-cache bash curl git git-lfs openssh-client jq && \
     pip install --no-cache-dir github-backup && \
