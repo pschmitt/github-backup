@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 
 install_github-backup() {
-  if ! command -v github-backup > /dev/null
+  if command -v github-backup > /dev/null
   then
-    if ! command -v pipx > /dev/null
-    then
-      pip install --user pipx
-      export PATH="${HOME}/.local/bin:${PATH}"
-    fi
-
-    pipx install github-backup
+    returnْْْ 0
   fi
+
+  if ! command -v pipx > /dev/null
+  then
+    pip install --user pipx
+    export PATH="${HOME}/.local/bin:${PATH}"
+  fi
+
+  pipx install github-backup
 }
 
 list_gh_orgs() {
@@ -39,18 +41,27 @@ gh_backup() {
     "${extra_args[@]}"
   then
     date "$DATE_FORMAT" | tee "${DATA_DIR}/${target}/LAST_UPDATED"
+    return 0
   fi
+
+  return 1
 }
 
 gh_backup_all_orgs() {
   local -a orgs
   mapfile -t orgs < <(list_gh_orgs)
 
-  local org
+  local rc=0 org
   for org in "${orgs[@]}"
   do
-    gh_backup --organization "$org"
+    if ! gh_backup --organization "$org"
+    then
+      echo "Failed to back up org $org" >&2
+      rc=1
+    fi
   done
+
+  return "$rc"
 }
 
 hc() {
@@ -99,7 +110,11 @@ then
     set -ex
   fi
 
-  install_github-backup
+  if ! install_github-backup
+  then
+    echo "Failed to install github-backup" >&2
+    exit 1
+  fi
 
   mkdir -p "$DATA_DIR"
 
@@ -120,5 +135,6 @@ then
     hc "/fail" "Backup of $GITHUB_USERNAME failed"
   fi
 
+  # update global state file
   date "$DATE_FORMAT" | tee "${DATA_DIR}/LAST_UPDATED"
 fi
