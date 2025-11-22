@@ -3,7 +3,7 @@
 install_github-backup() {
   if command -v github-backup > /dev/null
   then
-    returnْْْ 0
+    return 0
   fi
 
   if ! command -v pipx > /dev/null
